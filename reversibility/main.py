@@ -1,7 +1,12 @@
+# [TODO] Write import import output files from dataframes from in other modules
+# import load_samples.py
+# import plate_map.py
+# import combine.py
+
 import pandas as pd
 import csv 
 import plate_map
-import load_plate
+
 
 # Load Dataframes from input files and combine into one data frame
 

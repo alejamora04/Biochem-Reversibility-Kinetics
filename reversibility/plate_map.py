@@ -65,5 +65,6 @@ protoype_df = pd.DataFrame({"Compound": consolidated_list, "Wells": consolidated
 print(f"The outgoing plate is in the following Format:.... \n \n {protoype_df}")
 
 # [WORKS] Write Output to JSON or CSV file 
-out_path = 'output/plate_map_output.csv'
+out_path = 'output/csv/plate_map_output.csv'
 df.to_csv(out_path)
+print("Operation plate_map.py is complete.")

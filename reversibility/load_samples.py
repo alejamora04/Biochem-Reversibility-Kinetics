@@ -35,5 +35,6 @@ plate_df.index=np.arrange(384)
 
 # [IN PROGRESS] Checkpoint - Test df Output
 # Write dataframe to csv file in output folder 
-out_path = 'output/load_samples_output.csv'
+out_path = 'output/csv/load_samples_output.csv'
 df.to_csv(outpath)
+print("Operation Load_Samples.py is complete.")
