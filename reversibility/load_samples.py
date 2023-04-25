@@ -1,12 +1,12 @@
-# Open and import CSVs into pandas
+# Open and import plate readout CSVs into pandas
 import pandas as pd
+import numpy as np
 import csv 
-
 
 # Cleans up plate readout CSVs 
 
 # [WORKS] Open sample plate csv from path
-in_path = "/input/plate-data/sample_plate.csv"
+in_path = "/input/plate-data/plate_readout.csv"
 df = pd.read_csv(in_path)
 # Drop Extraneous rows from plate data
 plate_df.drop(index=[0:2], axis=0, inplace=True)
@@ -15,63 +15,25 @@ preview = plate_df.head
 # Validate contents of df file
 # print(preview)
 
+# [WORKS] Change Top Row of CSV for abs readout
+list_label =[]
+i=0
+for i in range(0, 61):
+    list_label.append("Abs_Min:"+ str(i))
+    i = i+1
+# Add "Well" label to first column
+x = "Well"
+list_label.insert(0, x)
+# Validate layout
+# print(f"The Time Series Row 1 label currenlty looks like: \n \n {list_label}')
 
+# [WORKS] Assign List labels to columns
+plate_df.columns=(list_label)
+plate_df.index=np.arrange(384)
+# Validate Layout.
+# print(f"The current layout looks like: \n \n {plate_df}")
 
-# [WORKS] Iterate through each column adding samples to list skip 1st column
-sample_list=[]
-for column in df:
-    samples = df[column].values.tolist()
-    sample_list.append(samples)
-# Validate parsed plate samples
-# print(f"The Sample list is: \n \n {sample_list}')
-
-# [WORKS] Loop through the list twice to consolidate values into single list
-consolidated_list=[]
-for i in sample_list[1:]:
-    for j in i:
-        consolidated_list.append(i)
-# Validate Stacked List.
-# print(f"The Stacked List is: \n \n {consolidated_list}")
-
-# [WORKS] Populate Column 1 with Compound List
-sample_column = {'Compound': consolidated_list}
-sample_df = pd.DataFrame(sample_column)
-# Validate plate in proper format
-print(sample_df)
-
-# [WORKS] Read Layout of 384 well plate and store it into pd Column
-plate_path = "input/plate-data/sample-plate-csv"
-well_layout_df = pd.read_csv(plate_path, header=None)
-plate_preview = well_layout_df.head
-# Validate format
-# print(plate_preview)
-
-# [WORKS] Iterate through each column adding samples to list
-well_list=[]
-for column in well_layout_df:
-    samples = well_layout_df[column].values.tolist()
-    well_list.append(samples)
-# Validate format of parsed plate
-# print(f"The wells in the plate are as follows: \n \n {well_list}")
-
-# [WORKS] Loop through list twice to generate new pandas column
-consolidated_wells=[]
-for i in well_list:
-    for j in i:
-        consolidated_wells.append(j)
-# Validate Stacked List
-# print(f"The Wells in the plate are as follows: \n \n {consolidated_wells}")
-
-# [WORKS] Convert list in Dictionary for pd Column
-well_column = {'Well': consolidated_wells}
-well_df = pd.DataFrame(well_column)
-# Validate plate in proper format
-print(well_df)
-
-# [WORKS] Combine Multiple df into single indexed dataframe
-protoype_df = pd.DataFrame({"Compound": consolidated_list, "wells": consolidated_wells})
-print(f"The outgoing plate is in the following Format:.... \n \n {protoype_df}")
-
-# [WORKS] Write Output to JSON or CSV file 
-out_path = 'output/plate_map_output.csv'
+# [IN PROGRESS] Checkpoint - Test df Output
+# Write dataframe to csv file in output folder 
+out_path = 'output/load_samples_output.csv'
 df.to_csv(outpath)
