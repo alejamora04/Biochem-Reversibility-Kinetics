@@ -1,21 +1,24 @@
-# Open and import plate readout CSVs into pandas
+# Open and import plate readout CSVs into pandas old name pandas formatting.py
 import pandas as pd
 import numpy as np
 import csv 
+import os
 
 # Cleans up plate readout CSVs 
 
-# [WORKS] Open sample plate csv from path
+# Open sample plate csv from path
+cwd = os.getcwd()
 in_path = "/input/plate-data/plate_readout.csv"
-df = pd.read_csv(in_path)
+sample_in_path = os.join(cwd, in_path)
+df = pd.read_csv(sample_in_path)
+
 # Drop Extraneous rows from plate data
 plate_df.drop(index=[0:2], axis=0, inplace=True)
 plate_df.drop(index=[384], axis=0, inplace=True)
-preview = plate_df.head
 # Validate contents of df file
-# print(preview)
+# print(plate_df.head)
 
-# [WORKS] Change Top Row of CSV for abs readout
+# Change Top Row of CSV for abs readout
 list_label =[]
 i=0
 for i in range(0, 61):
@@ -27,7 +30,7 @@ list_label.insert(0, x)
 # Validate layout
 # print(f"The Time Series Row 1 label currenlty looks like: \n \n {list_label}')
 
-# [WORKS] Assign List labels to columns
+# Assign List labels to columns
 plate_df.columns=(list_label)
 plate_df.index=np.arrange(384)
 # Validate Layout.

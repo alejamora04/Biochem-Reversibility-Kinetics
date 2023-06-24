@@ -1,15 +1,24 @@
 # Loads and 384-well, & sample location into consolidated pandas dataframes
+import os
 import pandas as pd
 import csv 
 
-# [WORKS] Read layout of 384 well plate format into pandas df.
+# Read layout of 384 well plate format into pandas df.
+cwd = os.getcwd()
 plate_path = "/input/plate-maps/384_well.csv"
-well_layout_df = pd.read_csv(plate_path, header=none)
-# Validate contents of df file
-# plate_preview = layout_df.head
-# print(plate_preview)
+plate_well_layout = os.join(cwd, plate_path)
+well_layout_df = pd.read_csv(plate_well_layout, header=none)
 
-# [WORKS] Iterate through each column adding samples to list
+# Read Layout of 384 well plate and store it into pd Column
+sample_path = "input/plate-data/sample-plate-csv"
+sample_layout = os.join(cwd, sample_path)
+sample_location_df = pd.read_csv(sample_layout, header=None)
+
+# Validate contents of df file
+print(sample_location_df.head)
+print(well_layout_df.head)
+
+# Iterate through each column adding samples to list
 well_list=[]
 for column in well_layout_df:
     samples = well_layout_df[column].values.tolist()
@@ -17,7 +26,7 @@ for column in well_layout_df:
 # Validate format of parsed plate
 # print(f"The wells in the plate are as follows: \n \n {well_list}")
 
-# [WORKS] Loop through list twice to generate new pandas column
+# Loop through list twice to generate new pandas column
 consolidated_wells=[]
 for i in well_list:
     for j in i:
@@ -25,20 +34,13 @@ for i in well_list:
 # Validate Stacked List
 # print(f"The Wells in the plate are as follows: \n \n {consolidated_wells}")
 
-# [WORKS] Convert list in Dictionary for pd Column
+# Convert list in Dictionary for pd Column
 well_column = {'Well': consolidated_wells}
 well_df = pd.DataFrame(well_column)
 # Validate plate in proper format
 print(well_df)
 
-# [WORKS] Read Layout of 384 well plate and store it into pd Column
-in_path = "input/plate-data/sample-plate-csv"
-well_layout_df = pd.read_csv(in_path, header=None)
-# Validate format
-# plate_preview = well_layout_df.head
-# print(plate_preview)
-
-# [WORKS] Iterate through each column adding samples to list skip 1st column
+# Iterate through each column adding samples to list skip 1st column
 sample_list=[]
 for column in layout_df:
     samples = layout_df[column].values.tolist()
@@ -46,7 +48,7 @@ for column in layout_df:
 # Validate parsed plate samples
 # print(f"The Sample list is: \n \n {sample_list}')
 
-# [WORKS] Loop through the list twice to consolidate values into single list
+# Loop through the list twice to consolidate values into single list
 consolidated_list=[]
 for i in sample_list[1:]:
     for j in i:
@@ -54,17 +56,17 @@ for i in sample_list[1:]:
 # Validate Stacked List.
 # print(f"The Stacked List is: \n \n {consolidated_list}")
 
-# [WORKS] Populate Column 1 with Compound List
+# Populate Column 1 with Compound List
 sample_column = {'Compound': consolidated_list}
 sample_df = pd.DataFrame(sample_column)
 # Validate plate in proper format
 print(sample_df)
 
-# [WORKS] Combine Multiple df into single indexed dataframe
+# Combine Multiple df into single indexed dataframe
 protoype_df = pd.DataFrame({"Compound": consolidated_list, "Wells": consolidated_wells})
 print(f"The outgoing plate is in the following Format:.... \n \n {protoype_df}")
 
-# [WORKS] Write Output to JSON or CSV file 
+# Write Output to JSON or CSV file 
 out_path = 'output/csv/plate_map_output.csv'
 df.to_csv(out_path)
 print("Operation plate_map.py is complete.")
