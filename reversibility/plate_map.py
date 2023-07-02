@@ -1,72 +1,77 @@
 # Loads and 384-well, & sample location into consolidated pandas dataframes
 import os
+import platform
 import pandas as pd
 import csv 
 
-# Read layout of 384 well plate format into pandas df.
+# File IO Iterate through specified directory to load specified files.
+def get_file_paths(path, file_extension):
+    file_paths = []
+    current_os = platform.system()
+
+    for root, dir, files in os.walk(path, topdown=False):
+        for name in files:
+            if file_extension in name:
+                current_path = os.path.join(root, name)
+                if current_os == "Linux":
+                    linux_path = current_path.replace('\\', '/')
+                    file_paths.append(linux_path)
+                elif current_os == "Windows":
+                    file_paths.append(current_path)
+    print("[+] Retrieved all file paths using get_file_paths function for directory: ", path)
+    return file_paths
+
+# Parse all files within directory into list of names.
+def get_file_names(file_path):
+    file_names = []
+    i = 0
+    for file in file_path:
+        current_file = file_path[i].split("\\")
+        current_file = current_file[-1].split(".")
+        current_file = current_file[0]
+        file_names.append(current_file)
+        i = i + 1 
+    return file_names
+
+# Turn CSV iterator into function
+def csv_to_pandas(dataframe, start_position=0):
+    condensed_list = []
+    consolidated_list = []
+    for column in dataframe:
+        current_list = dataframe[column].values.tolist()
+        condensed_list.append(current_list)
+
+    for i in condensed_list[start_position:]:
+        for j in i:
+            consolidated_list.append(j)
+    return consolidated_list
+
+# INPUT: Read layout of 384 well plate format and sample locations into pandas df.
 cwd = os.getcwd()
-plate_path = "/input/plate-maps/384_well.csv"
+plate_path = "/input/plate-maps/"
 plate_well_layout = os.join(cwd, plate_path)
-well_layout_df = pd.read_csv(plate_well_layout, header=none)
+file_ext = ".csv"
+
+parsed_paths = get_file_paths(plate_well_layout, file_ext)
+file_names = get_file_names(parsed_paths)
 
 # Read Layout of 384 well plate and store it into pd Column
-sample_path = "input/plate-data/sample-plate-csv"
-sample_layout = os.join(cwd, sample_path)
+plate_well_layout = parsed_paths[0]
+sample_layout = parsed_paths[1]
+
+# OUTPUT: Write Output to CSV file 
+out_path = 'output/csv/plate_map_output.csv'
+file_out_path = os.path.join(cwd = out_path)
+
+# Read sample position from 384-well plate into Pandas Df 
 sample_location_df = pd.read_csv(sample_layout, header=None)
+consolidated_sample_list = csv_to_pandas(sample_location_df, start_position=1)
 
-# Validate contents of df file
-print(sample_location_df.head)
-print(well_layout_df.head)
-
-# Iterate through each column adding samples to list
-well_list=[]
-for column in well_layout_df:
-    samples = well_layout_df[column].values.tolist()
-    well_list.append(samples)
-# Validate format of parsed plate
-# print(f"The wells in the plate are as follows: \n \n {well_list}")
-
-# Loop through list twice to generate new pandas column
-consolidated_wells=[]
-for i in well_list:
-    for j in i:
-        consolidated_wells.append(j)
-# Validate Stacked List
-# print(f"The Wells in the plate are as follows: \n \n {consolidated_wells}")
-
-# Convert list in Dictionary for pd Column
-well_column = {'Well': consolidated_wells}
-well_df = pd.DataFrame(well_column)
-# Validate plate in proper format
-print(well_df)
-
-# Iterate through each column adding samples to list skip 1st column
-sample_list=[]
-for column in layout_df:
-    samples = layout_df[column].values.tolist()
-    sample_list.append(samples)
-# Validate parsed plate samples
-# print(f"The Sample list is: \n \n {sample_list}')
-
-# Loop through the list twice to consolidate values into single list
-consolidated_list=[]
-for i in sample_list[1:]:
-    for j in i:
-        consolidated_list.append(j)
-# Validate Stacked List.
-# print(f"The Stacked List is: \n \n {consolidated_list}")
-
-# Populate Column 1 with Compound List
-sample_column = {'Compound': consolidated_list}
-sample_df = pd.DataFrame(sample_column)
-# Validate plate in proper format
-print(sample_df)
+well_layout_df = pd.read_csv(plate_well_layout, header=None)
+consolidated_wells = csv_to_pandas(well_layout_df)
 
 # Combine Multiple df into single indexed dataframe
-protoype_df = pd.DataFrame({"Compound": consolidated_list, "Wells": consolidated_wells})
-print(f"The outgoing plate is in the following Format:.... \n \n {protoype_df}")
+plate_map_df = pd.DataFrame({"Compound": consolidated_sample_list, "Wells": consolidated_wells})
 
-# Write Output to JSON or CSV file 
-out_path = 'output/csv/plate_map_output.csv'
-df.to_csv(out_path)
-print("Operation plate_map.py is complete.")
+plate_map_df.to_csv(out_path)
+print("[+] Plate_map.py has mapped the sample locations to the relevant wells.")
