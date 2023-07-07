@@ -1,17 +1,14 @@
-# [TODO] Write import import output files from dataframes from in other modules
-# import load_samples.py
-# import plate_map.py
-# import combine.py
+import Data_Formatting as format
+import plot as plot
 
-import pandas as pd
-import csv 
-import plate_map
+# Run all necessary modules to clean data and plot it.
+def main():
 
+    format.main()
+    plot.main()
 
-# Load Dataframes from input files and combine into one data frame
+    print("[+] Kinetics modeling has completed all operations.")
+    return
 
-# Confirm Successful loading of plate_map.py
-print("plate_map.py has finished executing.")
-
-# Confirm Successful loading of load_data.py
-print("load_data.py has finished executing.")
+if __name__ == '__main__':
+    main()
