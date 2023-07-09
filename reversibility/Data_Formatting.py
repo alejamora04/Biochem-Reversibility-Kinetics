@@ -1,8 +1,10 @@
-# Loads and 384-well, & sample location into consolidated pandas dataframes
 import os
 import platform
 import pandas as pd
 import numpy as np
+
+# TODO: Expand script ability to loop through multiple plates.
+# TODO: Incorporate Pivot Table Heirerarchy to filter readouts by plate.
 
 # File IO Iterate through specified directory to load specified files.
 def get_file_paths(path, file_extension):
@@ -46,11 +48,12 @@ def csv_to_pandas(dataframe, start_position=0):
             consolidated_list.append(j)
     return consolidated_list
 
+# Loads and 384-well, & sample location into consolidated pandas dataframes
 def main():
     # INPUT: Read layout of 384 well plate format and sample locations into pandas df.
     cwd = os.getcwd()
     # Load 384 plate and sample layout from csv
-    plate_path = "/input/plate-maps/"
+    plate_path = "/input/plate-map/"
     plate_well_layout = os.path.join(cwd + plate_path)
     # Load Sample readout data from csv file
     sample_data_path = "input/plate-data/"
@@ -70,12 +73,12 @@ def main():
     # [Sample Data Readouts]
     # Delete Extraneuos rows.
     plate_df = pd.read_csv(sample_paths[0], header = None)
-    plate_df.drop(index=plate_df.index[0:2], axis = 0, inplace=True)
-    plate_df.drop(index=plate_df.index[384], axis = 0, inplace=True)
+    plate_df.drop(index=plate_df.index[0:1], axis = 0, inplace=True)
 
     # Create a time label for the first row of the dataframe.
+    # TODO Figure out bug that incoporates Extraneuos row 60
     list_label = []
-    for i in range(0, 61):
+    for i in range(0, 60):
         list_label.append("Abs_min: " + i)
 
     x = "Well"
@@ -87,7 +90,7 @@ def main():
 
     # [Well and Sample position manipulations]
     # Read sample position from 384-well plate into Pandas Df 
-    sample_location_df = pd.read_csv(sample_layout, header=None)
+    sample_location_df = pd.read_csv(sample_layout)
     consolidated_sample_list = csv_to_pandas(sample_location_df, start_position=1)
 
     well_layout_df = pd.read_csv(plate_well_layout, header=None)
@@ -103,7 +106,7 @@ def main():
     merged_dataframe.name = sample_file_names[0] 
 
     # OUTPUT: Write Output to CSV file 
-    out_path = "output/csv/{sample_file_names[0]}_formatted.csv"
+    out_path = f"output/csv/{sample_file_names[0]}_formatted.csv"
     file_out_path = os.path.join(cwd + out_path)
 
     plate_map_df.to_csv(out_path)

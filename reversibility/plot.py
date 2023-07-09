@@ -1,4 +1,3 @@
-# Take all of the sample data and plot it using matplotlib
 import os
 import numpy as np
 import pandas as pd
@@ -6,7 +5,7 @@ import statistics
 import matplotlib.pyplot as plt
 import Data_Formatting as format
 
-# TODO: Perform curve fitting to classify readouts as reversible(FAST, SLOW, IRREVERSIBLE)
+# TODO: Perform curve fitting to categorize readouts based on kinetics classification [FAST, SLOW, IRREVERSIBLE]
 
 # Take the average Abs data readout for the control samples. Combine data from multiple samples.
 def avg_pd_rows(pd_dataframe):
@@ -17,6 +16,7 @@ def avg_pd_rows(pd_dataframe):
         avg_readout.append(Avg_Calc)
     return avg_readout
 
+# Take all of the sample data and plot it using matplotlib
 def main():
     # File IO
     # [INPUT] Load formatted and cleaned csv to plot
@@ -51,10 +51,12 @@ def main():
     # [DMSO] Extract DMSO readouts into smaller df
     DMSO_df = sample_plate_df.loc["DMSO"]
     DMSO_Avg = avg_pd_rows(DMSO_df)
+    sample_count_DMSO = len(DMSO_df)
 
     # [No Enzyme] control data 
     No_Compound_df = sample_plate_df.loc["no enzyme"]
     No_Enzyme_Avg = avg_pd_rows(No_Compound_df)
+    sample_count_No_Compound = len(No_Compound_df)
 
     # Drop [+ & -] Controls to extract sample information
     Compound_df = sample_plate_df.drop["DMSO", "no enzyme"]
@@ -67,13 +69,13 @@ def main():
     for i in range(len(Compound_df)):
         current_sample_ro = Compound_df.iloc[i, 2:62].values.flatten().tolist()
         current_sample_label = Compound_df.index[i]
-        sample_well = Compound_df.iloc[i, 0]
+        sample_well = Compound_df.iloc[i, 1]
 
         # Plot generated data
         plt.clf()
-        plt.plot(x_axis, DMSO_Avg, 'bo-', label="DMSO n=15")
-        plt.plot(x_axis, No_Enzyme_Avg, 'ro-', label="no_compound n=13")
-        plt.plot(x_axis, current_sample_ro, 'yo-', label= current_sample_label)
+        plt.plot(x_axis, DMSO_Avg, 'bo-', label = f"DMSO Avg  [n={sample_count_DMSO}]")
+        plt.plot(x_axis, No_Enzyme_Avg, 'ro-', label = f"No Compound Avg [n={sample_count_No_Compound}]")
+        plt.plot(x_axis, current_sample_ro, 'yo-', label = current_sample_label)
 
         # Format plot, labels, legends and axis
         plt.xlabel('Time [Minutes]')
